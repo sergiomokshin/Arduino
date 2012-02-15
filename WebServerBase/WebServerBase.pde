@@ -5,7 +5,6 @@
  Adaptação WebServer para monitoramento de entradas análogicas, digitais e acionamento de saídas digitais
  por Sérgio de Miranda e Castro Mokshin
  
-
  Protocolo para acionar saída
  ligar saida 3 IS31
  desligar saida 3 IS30
@@ -17,7 +16,6 @@
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[] = { 192,168,1, 70 };
-char entradas [] = {'E','0','0','0','0','0','0','0','0'};
 
 Server server(80);
 char clientline[BUFSIZ];
@@ -28,33 +26,18 @@ int tamanhocomando;
 boolean inicioComando1;
 boolean inicioComando2;
 boolean fimComando;
-int indiceentrada;
+
 void setup()
 {
-  
-  pinMode(0, OUTPUT);     
-  pinMode(1, OUTPUT);     
-  pinMode(2, OUTPUT);     
-  pinMode(3, OUTPUT);     
-  pinMode(4, OUTPUT);     
-  pinMode(5, OUTPUT);     
-  pinMode(6, OUTPUT);     
-  pinMode(7, OUTPUT);       
-  
-  digitalWrite(0, LOW);
-  digitalWrite(1, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  digitalWrite(4, LOW);
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
-  digitalWrite(7, LOW);
- 
-  pinMode(8, INPUT);     
-  pinMode(9, INPUT);     
-  pinMode(10, INPUT);     
-  pinMode(11, INPUT);     
-  pinMode(12, INPUT);     
+  for (int i=0;i<=7;i++)
+  {
+    pinMode(i, OUTPUT);       
+    digitalWrite(i, LOW);  
+  } 
+  for (int i=8;i<=12;i++)
+  {
+      pinMode(i, INPUT);     
+  }
   
   Serial.begin(9600);
   Ethernet.begin(mac, ip);
@@ -88,23 +71,23 @@ void AguardaComandosWEB()
            if (index >= BUFSIZ) 
               index = BUFSIZ -1;       
           continue;
-        }             
-          Serial.print(index);
-          Serial.print("-");
-          Serial.print(clientline);
-          
+        }                     
           clientline[index] = 0;               
           DisparaComando();               
-          Header(client); 
-          Inputs(client);
-          Outputs(client);                                       
-          Footer(client);   
+          PutHtml(client);          
           break;
       }
     }
     delay(1);
     client.stop();
   }
+}
+void PutHtml(Client client)
+{
+  Header(client); 
+  Inputs(client);
+  Outputs(client);                                       
+  Footer(client);    
 }
 
 void DisparaComando()
@@ -146,7 +129,7 @@ void DisparaSaida()
          nivel = 1;   
     }     
     char pin =  comando[1];
-       
+    
   switch (pin) {
      case '0':
 	 digitalWrite(0, nivel);
@@ -173,6 +156,7 @@ void DisparaSaida()
 	 digitalWrite(7, nivel);
 	 break;
      }
+
  }
 
 void Header(Client client)
