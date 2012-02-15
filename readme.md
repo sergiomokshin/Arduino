@@ -2,7 +2,7 @@
 
 Sketch para projetos de webserver com Arduino.
 
-![Automation Shield](http://2.bp.blogspot.com/-vpelax3SbG0/TzmbquwE20I/AAAAAAAAAJM/MYi4NBYZEZE/s640/DSCF4515.JPG “Automation Shield”)
+![Automation Shield](http://2.bp.blogspot.com/-vpelax3SbG0/TzmbquwE20I/AAAAAAAAAJM/MYi4NBYZEZE/s640/DSCF4515.JPG)
 
 ## WebServerBase
 Sketch template para customizacao de webserver para o Arduino
