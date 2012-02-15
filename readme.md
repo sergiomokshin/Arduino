@@ -7,13 +7,16 @@ Sketch para projetos de webserver com Arduino.
 - WebServerBase
 Sketch template para customizacao de webserver para o Arduino
 
-
 - WebServerMonitor
 Sketch codificado para automacao remota:
-- Entradas Anólogicas: Monitoramento de temperatura e umidade do ar
-- Entradas Digitais: Monitoramento de 5 entradas digitais
-- Saidas Digitais: Acionamento e monitoramento de 6 saidas digitais
 
+## Funcionalidades
+- Monitoramento de entradas analógicas, temperatura e umidade do ar
+- Monitoramento de 5 entradas digitais
+- Acionamento e monitoramento de 6 saidas digitais
+
+## Interface Web
+![Automation Shield](http://3.bp.blogspot.com/-srpQMLxhF_Y/TzxGtrrYIoI/AAAAAAAAAJU/LJ7bMlHmCok/s640/Interface+Web.png)
 
 ## Lista de Materiais para construcao do Shield
 - 8 - Relés 12V-15A 1 polo 2 posições
