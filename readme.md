@@ -4,11 +4,9 @@ Sketch para projetos de webserver com Arduino.
 
 ![Automation Shield](http://2.bp.blogspot.com/-vpelax3SbG0/TzmbquwE20I/AAAAAAAAAJM/MYi4NBYZEZE/s640/DSCF4515.JPG)
 
-- WebServerBase
-Sketch template para customizacao de webserver para o Arduino
+- WebServerBase: Sketch template para customizacao de projetos webserver para o Arduino
 
-- WebServerMonitor
-Sketch codificado para automacao remota:
+- WebServerMonitor: Sketch codificado para automacao remota
 
 ## Funcionalidades
 - Monitoramento de entradas analógicas, temperatura e umidade do ar
@@ -19,6 +17,8 @@ Sketch codificado para automacao remota:
 ![Automation Shield](http://3.bp.blogspot.com/-srpQMLxhF_Y/TzxGtrrYIoI/AAAAAAAAAJU/LJ7bMlHmCok/s640/Interface+Web.png)
 
 ## Lista de Materiais para construcao do Shield
+- 1 Arduino Uno
+- 1 Ethernet Shield
 - 8 - Relés 12V-15A 1 polo 2 posições
 - 18 - Resistores 1K  1/8W (marrom-preto-vermelho)
 - 5 - Resistores 10K  1/8W (marrom-preto-laranja)
