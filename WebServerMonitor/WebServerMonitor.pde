@@ -10,9 +10,11 @@
  desligar saida 3 IS30
  
  */
+#define DHT11_PIN 0      // ADC0
 #define BUFSIZ 100
 #include <SPI.h>
 #include <Ethernet.h>
+
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[] = { 192,168,1, 70 };
@@ -27,35 +29,40 @@ boolean inicioComando1;
 boolean inicioComando2;
 boolean fimComando;
 
-void setup()
-{
-  for (int i=0;i<=7;i++)
-  {
+
+void setup(){
+  
+    DDRC |= _BV(DHT11_PIN);
+  PORTC |= _BV(DHT11_PIN);
+  Serial.begin(9600);
+  Serial.println("Ready");
+
+
+    
+  for (int i=0;i<=7;i++){
     pinMode(i, OUTPUT);       
     digitalWrite(i, LOW);  
   } 
-  for (int i=8;i<=12;i++)
-  {
+  for (int i=8;i<=12;i++) {
       pinMode(i, INPUT);     
   }
-  
-  Serial.begin(9600);
+ 
   Ethernet.begin(mac, ip);
   server.begin();
   inicioComando1 = false;
   inicioComando2 = false;
   fimComando = false;
-  indiceentrada = 0;
-  
+   
+
 }
 
-void loop()
-{
+
+void loop(){
   AguardaComandosWEB(); 
 }
 
-void AguardaComandosWEB()
-{   
+void AguardaComandosWEB(){   
+  
   index = 0;
   tamanhocomando = 0;
   Client client = server.available();
@@ -82,16 +89,14 @@ void AguardaComandosWEB()
     client.stop();
   }
 }
-void PutHtml(Client client)
-{
+void PutHtml(Client client){
   Header(client); 
   Inputs(client);
   Outputs(client);                                       
   Footer(client);    
 }
 
-void DisparaComando()
-{  
+void DisparaComando(){  
     boolean iniciocomando = false;       
     for (int i = 0; i<index ; i++)
     {    
@@ -117,8 +122,7 @@ void DisparaComando()
     }       
 }
 
-void DisparaSaida()
-{
+void DisparaSaida(){
     int nivel = 0;
     if(comando[2] == '0') 
     {
@@ -159,8 +163,7 @@ void DisparaSaida()
 
  }
 
-void Header(Client client)
-{
+void Header(Client client){
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
   client.println();
@@ -186,12 +189,65 @@ void Header(Client client)
  
 }
 
-void Inputs(Client client)
-{
+void TemperaturaUmidade(Client client){  
+byte dht11_dat[5];
+  byte dht11_in;
+  byte i;// start condition
+	 // 1. pull-down i/o pin from 18ms
+  PORTC &= ~_BV(DHT11_PIN);
+  delay(18);
+  PORTC |= _BV(DHT11_PIN);
+  delayMicroseconds(40);
+  DDRC &= ~_BV(DHT11_PIN);
+  delayMicroseconds(40);
+  
+  dht11_in = PINC & _BV(DHT11_PIN);
+  if(dht11_in)
+  {
+    client.println("dht11 start condition 1 not met");
+    return;
+  }
+  delayMicroseconds(80);
+  dht11_in = PINC & _BV(DHT11_PIN);
+  if(!dht11_in)
+  {
+    client.println("dht11 start condition 2 not met");
+    return;
+  }
+  
+  delayMicroseconds(80);// now ready for data reception
+  for (i=0; i<5; i++)
+    dht11_dat[i] = read_dht11_dat();
+  DDRC |= _BV(DHT11_PIN);
+  PORTC |= _BV(DHT11_PIN);
+  byte dht11_check_sum = dht11_dat[0]+dht11_dat[1]+dht11_dat[2]+dht11_dat[3];// check check_sum
+  if(dht11_dat[4]!= dht11_check_sum)
+  {
+    client.println("DHT11 checksum error");
+  }
+  client.print("<span>Umidade Relativa = ");
+  client.print(dht11_dat[0], DEC);
+  client.print(".");
+  client.print(dht11_dat[1], DEC);
+  client.print("%</span>");
+  client.print("<span>Temperatura = ");
+  client.print(dht11_dat[2], DEC);
+  client.print(".");
+  client.print(dht11_dat[3], DEC);
+  client.println("C</span>");
+  
+  
+}
+
+void Inputs(Client client){
   client.print("<div class='BlocoMonitorEntrada'><div class='BlocoItensMonitor'>");
   client.print("Entradas Analogicas<br/>"); 
   client.println("<br/>");
-  for (int analogChannel = 0; analogChannel <=5; analogChannel++) {
+  
+  
+  TemperaturaUmidade(client);
+  
+  for (int analogChannel = 2; analogChannel <=5; analogChannel++) {
       client.print("<span>Entrada Analogica ");
       client.print(analogChannel);
       client.print(" = ");
@@ -212,8 +268,8 @@ void Inputs(Client client)
   client.print("</div>");  
 }
 
-void Outputs(Client client)
-{
+void Outputs(Client client){
+  
   client.print("<div class='BlocoMonitorEntrada'><div class='BlocoItensMonitor'>");
   client.print("Saidas Digitais<br/><br/>");         
 
@@ -243,13 +299,24 @@ void Outputs(Client client)
     }
 }
 
-void Footer(Client client)
-{
+void Footer(Client client){
   client.println("</div></div></body></html>");
 }
 
-
-
+byte read_dht11_dat()
+{
+  byte i = 0;
+  byte result=0;
+  for(i=0; i< 8; i++)
+  {
+    while(!(PINC & _BV(DHT11_PIN)));  // wait for 50us
+    delayMicroseconds(30);
+    if(PINC & _BV(DHT11_PIN)) 
+      result |=(1<<(7-i));
+    while((PINC & _BV(DHT11_PIN)));  // wait '1' finish
+    }
+    return result;
+}
 
 
 

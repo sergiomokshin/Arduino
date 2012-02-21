@@ -45,7 +45,6 @@ void setup()
   inicioComando1 = false;
   inicioComando2 = false;
   fimComando = false;
-  indiceentrada = 0;
   
 }
 
