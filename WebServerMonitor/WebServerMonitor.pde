@@ -10,7 +10,6 @@
  desligar saida 3 IS30
  
  */
-#define DHT11_PIN 0      // ADC0
 #define BUFSIZ 100
 #include <SPI.h>
 #include <Ethernet.h>
@@ -32,12 +31,8 @@ boolean fimComando;
 
 void setup(){
   
-    DDRC |= _BV(DHT11_PIN);
-  PORTC |= _BV(DHT11_PIN);
   Serial.begin(9600);
   Serial.println("Ready");
-
-
     
   for (int i=0;i<=7;i++){
     pinMode(i, OUTPUT);       
@@ -189,51 +184,12 @@ void Header(Client client){
  
 }
 
-void TemperaturaUmidade(Client client){  
-byte dht11_dat[5];
-  byte dht11_in;
-  byte i;// start condition
-	 // 1. pull-down i/o pin from 18ms
-  PORTC &= ~_BV(DHT11_PIN);
-  delay(18);
-  PORTC |= _BV(DHT11_PIN);
-  delayMicroseconds(40);
-  DDRC &= ~_BV(DHT11_PIN);
-  delayMicroseconds(40);
-  
-  dht11_in = PINC & _BV(DHT11_PIN);
-  if(dht11_in)
-  {
-    client.println("dht11 start condition 1 not met");
-    return;
-  }
-  delayMicroseconds(80);
-  dht11_in = PINC & _BV(DHT11_PIN);
-  if(!dht11_in)
-  {
-    client.println("dht11 start condition 2 not met");
-    return;
-  }
-  
-  delayMicroseconds(80);// now ready for data reception
-  for (i=0; i<5; i++)
-    dht11_dat[i] = read_dht11_dat();
-  DDRC |= _BV(DHT11_PIN);
-  PORTC |= _BV(DHT11_PIN);
-  byte dht11_check_sum = dht11_dat[0]+dht11_dat[1]+dht11_dat[2]+dht11_dat[3];// check check_sum
-  if(dht11_dat[4]!= dht11_check_sum)
-  {
-    client.println("DHT11 checksum error");
-  }
-  client.print("<span>Umidade Relativa = ");
-  client.print(dht11_dat[0], DEC);
-  client.print(".");
-  client.print(dht11_dat[1], DEC);
-  client.print("%</span>");
+void Temperatura(Client client){  
+
   client.print("<span>Temperatura = ");
-  client.print(dht11_dat[2], DEC);
+  client.print(1, DEC);
   client.print(".");
-  client.print(dht11_dat[3], DEC);
+  client.print(2, DEC);
   client.println("C</span>");
   
   
@@ -245,9 +201,9 @@ void Inputs(Client client){
   client.println("<br/>");
   
   
-  TemperaturaUmidade(client);
+  Temperatura(client);
   
-  for (int analogChannel = 2; analogChannel <=5; analogChannel++) {
+  for (int analogChannel = 1; analogChannel <=5; analogChannel++) {
       client.print("<span>Entrada Analogica ");
       client.print(analogChannel);
       client.print(" = ");
@@ -301,21 +257,6 @@ void Outputs(Client client){
 
 void Footer(Client client){
   client.println("</div></div></body></html>");
-}
-
-byte read_dht11_dat()
-{
-  byte i = 0;
-  byte result=0;
-  for(i=0; i< 8; i++)
-  {
-    while(!(PINC & _BV(DHT11_PIN)));  // wait for 50us
-    delayMicroseconds(30);
-    if(PINC & _BV(DHT11_PIN)) 
-      result |=(1<<(7-i));
-    while((PINC & _BV(DHT11_PIN)));  // wait '1' finish
-    }
-    return result;
 }
 
 
