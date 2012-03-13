@@ -9,7 +9,7 @@ Sketch para projetos de webserver com Arduino.
 - WebServerMonitor: Sketch codificado para automacao remota
 
 ## Funcionalidades
-- Monitoramento de entradas analógicas, temperatura e umidade do ar
+- Monitoramento de entradas analógicas
 - Monitoramento de 5 entradas digitais
 - Acionamento e monitoramento de 6 saidas digitais
 
