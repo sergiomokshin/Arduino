@@ -1,5 +1,6 @@
 # Arduino 
 Sketch para projetos  com Arduino.
+Não compátivel para conexão direta com Shield de Ethernet (Conflito de uso de portas).
 
 ![Automation Shield](http://2.bp.blogspot.com/-vpelax3SbG0/TzmbquwE20I/AAAAAAAAAJM/MYi4NBYZEZE/s640/DSCF4515.JPG)
 
